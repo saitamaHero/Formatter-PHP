@@ -5,31 +5,31 @@ namespace App\Formatters;
 /**
  * Undocumented class
  */
-class PercentFormatter implements IFieldFormatter
+class PercentFormatter extends BaseFieldFormatter
 {
     protected $params = [
         'base' => 100,
-        'decimals' => 0
+        'decimals' => 0,
+        'not_round' => false
     ];
 
-    public function format($value, array $params)
+    protected function transform($value)
     {
-        $params = $this->getParams($params);
-
         if (!is_numeric($value)) {
             return NULL;
         }
 
-        if ($params['base'] > 0) {
-            $value = $value * $params['base'];
+        if ($this->getParam('not_round')) {
+            $value = floor($value * pow(10, $this->getParam('decimals'))) / pow(10, $this->getParam('decimals'));
         }
-        
 
-        return sprintf("%s%%", number_format($value, $params['decimals']));
-    }
+        if ($this->getParam('base') > 0) {
+            $value = $value * $this->getParam('base');
+        }
 
-    public function getParams(array $params): array
-    {
-        return array_merge($this->params, $params);
+        return sprintf(
+            "%s%%",
+            number_format($value, $this->getParam('decimals'))
+        );
     }
 }

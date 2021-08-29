@@ -6,5 +6,5 @@ interface IFieldFormatter
 {
     public function format($value, array $params);
 
-    public function getParams(array $params) : array;
+    public function getParam(string $key);
 }

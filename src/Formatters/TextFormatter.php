@@ -5,36 +5,21 @@ namespace App\Formatters;
 /**
  * Undocumented class
  */
-class TextFormatter implements IFieldFormatter
+class TextFormatter extends BaseFieldFormatter
 {
     protected $params = [
         'transform' => '',
         'truncate' => 0,
     ];
 
-    public function format($value, array $params)
+    protected $regexTransformationsSplitter = '/\,/';
+
+    protected function transform($value)
     {
-        $params = $this->getParams($params);
+        $textTransformations = preg_split($this->regexTransformationsSplitter, $this->getParam('transform'));
 
-        if (empty($value)) {
-            return "";
-        }
+        foreach ($textTransformations as $transform) {
 
-        $value = $this->transform($value, $params['transform']);
-
-        if ($params['truncate'] > 0) {
-            $value = mb_substr($value, 0, $params['truncate']);
-        }
-
-        return $value;
-    }
-
-    protected function transform($value, $transform): string
-    {
-        $transforms = preg_split("/\,/", $transform);
-
-        foreach ($transforms as $transform) {
-        
             switch ($transform) {
                 case 'lower':
                     $value = mb_strtolower($value);
@@ -50,11 +35,10 @@ class TextFormatter implements IFieldFormatter
             }
         }
 
-        return $value;
-    }
+        if ($this->getParam('truncate') > 0) {
+            $value = mb_substr($value, 0, $this->getParam('truncate'));
+        }
 
-    public function getParams(array $params): array
-    {
-        return array_merge($this->params, $params);
+        return $value;
     }
 }

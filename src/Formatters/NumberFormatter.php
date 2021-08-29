@@ -5,7 +5,7 @@ namespace App\Formatters;
 /**
  * Undocumented class
  */
-class NumberFormatter implements IFieldFormatter
+class NumberFormatter extends BaseFieldFormatter
 {
     protected $params = [
         'decimals' => 0,
@@ -13,19 +13,17 @@ class NumberFormatter implements IFieldFormatter
         'thousands_sep' => null
     ];
 
-    public function format($value, array $params)
+    protected function transform($value)
     {
-        $params = $this->getParams($params);
-
         if (!is_numeric($value)) {
             return NULL;
         }
 
-        return number_format($value, $params['decimals'], $params['decimal_sep'], $params['thousands_sep']);
-    }
-
-    public function getParams(array $params): array
-    {
-        return array_merge($this->params, $params);
+        return number_format(
+            $value,
+            $this->getParam('decimals'),
+            $this->getParam('decimal_sep'),
+            $this->getParam('thousands_sep'),
+        );
     }
 }

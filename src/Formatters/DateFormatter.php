@@ -9,7 +9,7 @@ use Exception;
 /**
  * Undocumented class
  */
-class DateFormatter implements IFieldFormatter
+class DateFormatter extends BaseFieldFormatter
 {
     protected $params = [
         'pattern' => '',
@@ -19,36 +19,29 @@ class DateFormatter implements IFieldFormatter
 
     public function __construct()
     {
+        //using server defaults for the locale and timezone
         $this->params['locale'] = locale_get_default();
         $this->params['timezone'] = date_default_timezone_get();
     }
 
-    public function format($value, array $params)
+    protected function transform($value)
     {
-        $params = $this->getParams($params);
-
         try {
-            $dateValue = new \DateTime($value, new DateTimeZone($params['timezone']));
+            $dateValue = new \DateTime($value, new DateTimeZone($this->getParam('timezone')));
 
             $fmt = new \IntlDateFormatter(
-                $params['locale'],
+                $this->getParam('locale'),
                 \IntlDateFormatter::FULL,
                 \IntlDateFormatter::FULL,
-                $params['timezone'],
+                $this->getParam('timezone'),
                 \IntlDateFormatter::GREGORIAN,
-                $params['pattern']
+                $this->getParam('pattern')
             );
-            
+
             return $fmt->format($dateValue);
         } catch (Exception $e) {
-            
         }
 
-        return "";
-    }
-
-    public function getParams(array $params): array
-    {
-        return array_merge($this->params, $params);
+        return null;
     }
 }
