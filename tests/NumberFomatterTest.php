@@ -6,7 +6,7 @@ use App\Formatters\NumberFormatter;
 use PHPUnit\Framework\TestCase;
 
 
-class TestNumberFomatter extends TestCase
+class NumberFomatterTest extends TestCase
 {
     protected $formatter = null;
 
